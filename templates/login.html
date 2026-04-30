@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="../static/style.css" />
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="input-container auth-card">
+        <h2>Welcome Back</h2>
+
+        <form action="/login" method="post">
+          <div class="input-row">
+            <label for="login-email">Email :</label>
+            <input
+              id="login-email"
+              name="email"
+              type="email"
+              placeholder="enter email"
+              required
+            />
+          </div>
+
+          <div class="input-row">
+            <label for="login-password">Password :</label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              placeholder="enter password"
+              required
+            />
+          </div>
+
+          <div class="button">
+            <button id="login-button" type="submit">Login</button>
+          </div>
+        </form>
+
+        <p class="helper-text">
+          New here?
+          <a href="/signup">Create an account</a>
+        </p>
+      </div>
+    </div>
+    <script src="../static/code.js"></script>
+  </body>
+</html>
