@@ -1,5 +1,6 @@
 from flask import Flask , request ,render_template ,redirect
-import sqlite3
+import sqlite3 
+from pydantic import BaseModel
 
 
 app=Flask(__name__)
@@ -38,7 +39,7 @@ def signup():
             
             
         except sqlite3.IntegrityError:
-            return "email already exists"
+            return "email already exists "
         
         except Exception as e :
             return f"something went wrong:{e}"
