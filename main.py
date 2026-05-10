@@ -1,21 +1,45 @@
-from flask import Flask , request ,render_template ,redirect
-import sqlite3 
-from pydantic import BaseModel
+import os
+
+import bcrypt
+import mysql.connector
+from flask import Flask, redirect, render_template, request
+from mysql.connector import Error
 
 
-app=Flask(__name__)
+app = Flask(__name__)
+
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "user_login_db"
+}
+
+
+def get_db_connection():
+    return mysql.connector.connect(**DB_CONFIG)
+
+
+
+
 
 def start_db():
-    conn=sqlite3.connect("database/users.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""   
-                   CREATE TABLE IF NOT EXISTS users (
-                       id INTEGER PRIMARY KEY AUTOINCREMENT , email TEXT UNIQUE , password TEXT 
-                   )
-                   """)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL
+        )
+        """
+    )
     conn.commit()
     conn.close()
-    
+
+
 start_db()
 
 @app.route("/")
@@ -24,78 +48,79 @@ def home():
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
-    if request.method =="POST":
-        
+    if request.method == "POST":
+        name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
-        conn=None
+        
+        password_bytes = password.encode("utf-8")
+        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
+
+       
+        conn = None
         try:
-            conn = sqlite3.connect("database/users.db")
+            conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-            "INSERT INTO users ( email , password ) VALUES (?,?)",(email,password)
+                "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
+                (name, email, hashed_password),
             )
             conn.commit()
-            
-            
-        except sqlite3.IntegrityError:
+
+        except mysql.connector.IntegrityError:
             return "email already exists "
-        
-        except Exception as e :
+
+        except Error as e:
             return f"something went wrong:{e}"
-        
+
         finally:
             if conn:
                 conn.close()
-        
+
         return redirect("/login")
-    
+
     return render_template("signup.html")
 
 @app.route("/login",methods=["GET","POST"])
 def login():
-    if request.method=="POST":
+    if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        
-        conn=None
+
+        conn = None
         try:
-            
-            conn = sqlite3.connect("database/users.db")
+            conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("select * from users where email = ? ",(email,))
+            cursor.execute(
+                "SELECT id, name, email, password FROM users WHERE email = %s",
+                (email,),
+            )
             user = cursor.fetchone()
             if user:
-                if user[2]==password:
+                hashed_password = user[3].encode("utf-8")
+                login_password_bytes = password.encode("utf-8")
+                if bcrypt.checkpw(login_password_bytes, hashed_password):
+                    
+                    
+                    conn.commit()
                     return redirect("/dashboard")
-            
-                else :
-                   return "invalid password "   
+
+                return "invalid password "
             else:
                 return "invalid email"
-            
-        except Exception as e :
+
+        except Error as e:
             return f"something went wrong:{e}"
-        
+
         finally:
             if conn:
                 conn.close()
-            
-        
-        
-          
-       
+
     return render_template("login.html")
 
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     app.run(debug=True)
-
-        
-        
-    
-    
-

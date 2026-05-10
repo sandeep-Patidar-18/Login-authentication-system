@@ -4,14 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Signup</title>
-    <link rel="stylesheet" href="../static/style.css" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" >
   </head>
   <body>
     <div class="main-container">
       <h2>Create a new account</h2>
 
-      <form action="/signup" id="form" method="post">
+      <form action="{{ url_for('signup') }}" id="form" method="post">
         <div class="input-container">
+         <div class="input-row">
+             <label for="name">Name :</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="enter name"
+            required
+          />
+         </div>
          <div class="input-row">
              <label for="email">Email  :</label>
           <input
@@ -40,11 +50,11 @@
 
           <p class="helper-text">
             Already have an account?
-            <a href="/login">Login</a>
+            <a href="{{ url_for('login') }}">Login</a>
           </p>
         </div>
       </form>
     </div>
-    <!-- <script src="../static/code.js"></script> -->
+    <!-- <script src="{{ url_for('static', filename='code.js') }}"></script> -->
   </body>
 </html>
