@@ -17,6 +17,8 @@ I built this to learn how user authentication works in real projects.
 - bcrypt (for password hashing)
 - HTML & CSS (for frontend)
 - Jinja2 (Flask templating)
+- flask server
+-
 
 ## Why I Made This
 

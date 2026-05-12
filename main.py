@@ -13,7 +13,7 @@ DB_CONFIG = {
     "user": os.getenv("MYSQLUSER"),
     "password": os.getenv("MYSQLPASSWORD"),
     "database": os.getenv("MYSQLDATABASE"),
-    "port":os.getenv("MYSQLPORT"),
+    "port":os.getenv("MYSQLPORT")
 }
 
 
@@ -71,8 +71,8 @@ def signup():
         except mysql.connector.IntegrityError:
             return "email already exists "
 
-        except Error as e:
-            return f"something went wrong:{e}"
+        except Error as error:
+            return f"something went wrong:{error}"
 
         finally:
             if conn:
