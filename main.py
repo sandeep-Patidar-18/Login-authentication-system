@@ -9,12 +9,15 @@ from mysql.connector import Error
 app = Flask(__name__)
 
 DB_CONFIG = {
-    "host": os.getenv("MYSQLHOST"),
-    "user": os.getenv("MYSQLUSER"),
-    "password": os.getenv("MYSQLPASSWORD"),
-    "database": os.getenv("MYSQLDATABASE"),
-    "port":os.getenv("MYSQLPORT")
+    "host": os.getenv("MYSQLHOST") or os.getenv("MYSQL_HOST") or "localhost",
+    "user": os.getenv("MYSQLUSER") or os.getenv("MYSQL_USER") or "root",
+    "password": os.getenv("MYSQLPASSWORD") or os.getenv("MYSQL_PASSWORD") or "",
+    "database": os.getenv("MYSQLDATABASE") or os.getenv("MYSQL_DATABASE") or "user_login_db",
 }
+
+db_port = os.getenv("MYSQLPORT") or os.getenv("MYSQL_PORT")
+if db_port:
+    DB_CONFIG["port"] = int(db_port)
 
 
 def get_db_connection():
