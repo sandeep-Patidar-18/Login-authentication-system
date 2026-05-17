@@ -44,7 +44,10 @@ def start_db():
     conn.close()
 
 
-start_db()
+try:
+    start_db()
+except Error as error:
+    app.logger.warning(f"some errors : {error}")
 
 @app.route("/")
 def home():
@@ -62,6 +65,7 @@ def signup():
 
        
         conn = None
+        
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -109,12 +113,12 @@ def login():
                     conn.commit()
                     return redirect("/dashboard")
 
-                return "invalid password "
+                return "password is not correct "
             else:
                 return "invalid email"
 
         except Error as e:
-            return f"something went wrong:{e}"
+            return f"something is wrong:{e}"
 
         finally:
             if conn:
